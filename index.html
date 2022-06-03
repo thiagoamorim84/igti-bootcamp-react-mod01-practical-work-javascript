@@ -14,27 +14,27 @@
     <main>
       <form class="catalog-control">
         <div class="form-control">
-          <label for="filter-name">Nome:</label>
+          <label for="filter-name">Name:</label>
           <input type="text" id="filter-name" />
         </div>
         <div class="form-control">
-          <label for="filter-brand">Marca:</label>
-          <select id="filter-brand" onchange="filtrar()">
-            <option value="">Todos</option>
+          <label for="filter-brand">Brand:</label>
+          <select id="filter-brand" onchange="filterProducts()">
+            <option value="">All</option>
           </select>
         </div>
         <div class="form-control">
-          <label for="filter-type">Tipo:</label>
-          <select id="filter-type" onchange="filtrar()">
-            <option value="">Todos</option>
+          <label for="filter-type">Type:</label>
+          <select id="filter-type" onchange="filterProducts()">
+            <option value="">All</option>
           </select>
         </div>
         <div class="form-control">
           <label for="sort"></label>
           <select id="sort-type" onchange="renderTable()">
-            <option>Melhor Avaliados</option>
-            <option>Menores Preços</option>
-            <option>Maiores Preços</option>
+            <option>Best Rating</option>
+            <option>Price: Low to High</option>
+            <option>Price: High to Low</option>
             <option>A-Z</option>
             <option>Z-A</option>
           </select>

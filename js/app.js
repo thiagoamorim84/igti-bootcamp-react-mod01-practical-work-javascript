@@ -1,9 +1,9 @@
-let todosOsProdutos;
+let allProducts;
 let products;
 
 //EXEMPLO DO CÓDIGO PARA UM PRODUTO
 function productItem(product) {
-  let precoConvertido = converterMoeda(product.price);
+  let convertedPrice = convertCurrency(product.price);
   let itemDetails = loadDetails(product);
 
   const item = `<div class="product" data-name="${product.name}" data-brand="${product.brand}" data-type="${product.type}" tabindex="508">
@@ -13,14 +13,14 @@ function productItem(product) {
   <section class="product-description">
     <h1 class="product-name">${product.name}</h1>
     <div class="product-brands"><span class="product-brand background-brand">${product.brand}</span>
-<span class="product-brand background-price">${precoConvertido}</span></div>
+<span class="product-brand background-price">${convertedPrice}</span></div>
   </section>
   ${itemDetails}
 </div>`;
   return item;
 }
 
-function converterMoeda(value) {
+function convertCurrency(value) {
   if (value) {
     return "R$ " + applyFactor(value, 5.5);
   }
@@ -36,7 +36,7 @@ function applyFactor(value, factor) {
 
 //EXEMPLO DO CÓDIGO PARA OS DETALHES DE UM PRODUTO
 function loadDetails(product) {
-  let precoConvertido = converterMoeda(product.price);
+  let convertedPrice = convertCurrency(product.price);
 
   let details = `<section class="product-details">`;
 
@@ -53,7 +53,7 @@ function loadDetails(product) {
         <div class="details-row">
         <div>Price</div>
         <div class="details-bar">
-          <div class="details-bar-bg" style="width= 250">${precoConvertido}</div>
+          <div class="details-bar-bg" style="width= 250">${convertedPrice}</div>
         </div>
       </div>`;
   if (product.rating) {
@@ -84,47 +84,46 @@ function loadDetails(product) {
   return details;
 }
 
-const endPoint =
-  "http://127.0.0.1:8080/Desenvolvedor%20React/Modulo%201%20-%20Javascript%20Avancado/Trabalho%20Pratico%201/make-up-base/data/products.json";
+const endPoint = "data/products.json";
 
 //const endPoint = "http://makeup-api.herokuapp.com/api/v1/products.json";
 
-function carregarTodos() {
+function loadAll() {
   let productsPromise = fetch(endPoint);
   productsPromise.then((resp) => {
     resp.json().then((prods) => {
-      todosOsProdutos = prods;
+      allProducts = prods;
       products = prods;
       renderTable();
 
-      let marcas = products
+      let brands = products
         .map((item) => item.brand)
         .filter((value, index, self) => self.indexOf(value) === index)
         .sort();
 
-      let tipos = products
+      let types = products
         .map((item) => item.product_type)
         .filter((value, index, self) => self.indexOf(value) === index)
         .sort();
 
-      let comboMarcasHTML = `<option value="">Todos</option>`;
-      marcas.forEach((marca, index) => {
-        comboMarcasHTML += `<option value="${marca}">${marca}</option>`;
+      let comboBrandsHTML = `<option value="">All</option>`;
+      brands.forEach((brand, index) => {
+        comboBrandsHTML += `<option value="${brand}">${brand}</option>`;
       });
-      document.getElementById("filter-brand").innerHTML = comboMarcasHTML;
+      document.getElementById("filter-brand").innerHTML = comboBrandsHTML;
 
-      let comboTiposHTML = `<option value="">Todos</option>`;
-      tipos.forEach((tipo, index) => {
-        comboTiposHTML += `<option value="${tipo}">${tipo}</option>`;
+      let comboTypesHTML = `<option value="">All</option>`;
+      types.forEach((type, index) => {
+        comboTypesHTML += `<option value="${type}">${type}</option>`;
       });
 
-      document.getElementById("filter-type").innerHTML = comboTiposHTML;
+      document.getElementById("filter-type").innerHTML = comboTypesHTML;
     });
   });
 
   document
     .getElementById("filter-name")
-    .addEventListener("input", filterWithDelay(filtrar, 1000));
+    .addEventListener("input", filterWithDelay(filterProducts, 1000));
 }
 
 function filterWithDelay(fn, delay) {
@@ -145,19 +144,19 @@ function renderTable() {
 
 function sortProducts() {
   let sortType = document.getElementById("sort-type").value;
-  if (sortType == "Melhor Avaliados") {
+  if (sortType == "Best Rating") {
     products.sort(function (a, b) {
       ratingA = a.rating ? a.rating : 0;
       ratingB = b.rating ? b.rating : 0;
       return ratingA > ratingB ? -1 : ratingA < ratingB ? 1 : 0;
     });
-  } else if (sortType == "Menores Preços") {
+  } else if (sortType == "Price: Low to High") {
     products.sort(function (a, b) {
       precoA = a.price ? +a.price : 0;
       precoB = b.price ? +b.price : 0;
       return precoA < precoB ? -1 : precoA > precoB ? 1 : 0;
     });
-  } else if (sortType == "Maiores Preços") {
+  } else if (sortType == "Price: High to Low") {
     products.sort(function (a, b) {
       precoA = a.price ? +a.price : 0;
       precoB = b.price ? +b.price : 0;
@@ -165,40 +164,40 @@ function sortProducts() {
     });
   } else if (sortType == "A-Z") {
     products.sort(function (a, b) {
-      nomeA = a.name ? a.name : "";
-      nomeB = b.name ? b.name : "";
-      return nomeA < nomeB ? -1 : nomeA > nomeB ? 1 : 0;
+      nameA = a.name ? a.name : "";
+      nameB = b.name ? b.name : "";
+      return nameA < nameB ? -1 : nameA > nameB ? 1 : 0;
     });
   } else if (sortType == "Z-A") {
     products.sort(function (a, b) {
-      nomeA = a.name ? a.name : "";
-      nomeB = b.name ? b.name : "";
-      return nomeA > nomeB ? -1 : nomeA < nomeB ? 1 : 0;
+      nameA = a.name ? a.name : "";
+      nameB = b.name ? b.name : "";
+      return nameA > nameB ? -1 : nameA < nameB ? 1 : 0;
     });
   }
 }
 
-function filtrar() {
-  let marcaSelecionada = document.getElementById("filter-brand").value;
-  let tipoSelecionado = document.getElementById("filter-type").value;
-  let nome = document.getElementById("filter-name").value;
+function filterProducts() {
+  let selectedBrand = document.getElementById("filter-brand").value;
+  let selectedType = document.getElementById("filter-type").value;
+  let name = document.getElementById("filter-name").value;
 
-  let prods = todosOsProdutos;
+  let prods = allProducts;
 
-  if (nome && nome.length > 0) {
+  if (name && name.length > 0) {
     prods = prods.filter(
-      (item) => item.name.toLowerCase().indexOf(nome.toLowerCase()) > -1
+      (item) => item.name.toLowerCase().indexOf(name.toLowerCase()) > -1
     );
   }
 
-  if (marcaSelecionada && marcaSelecionada != "Todos") {
-    prods = prods.filter((item) => item.brand === marcaSelecionada);
+  if (selectedBrand && selectedBrand != "Todos") {
+    prods = prods.filter((item) => item.brand === selectedBrand);
   }
-  if (tipoSelecionado && tipoSelecionado != "Todos") {
-    prods = prods.filter((item) => item.product_type === tipoSelecionado);
+  if (selectedType && selectedType != "Todos") {
+    prods = prods.filter((item) => item.product_type === selectedType);
   }
   products = prods;
   renderTable();
 }
 
-carregarTodos();
+loadAll();
